@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+    <h1>detail.html</h1>
+    
+    <div>
+        name : <input type="text" name="name" id="name">
+    </div>
+    <div>
+        email : <input type="text" name="email" id="email">
+    </div>
+    <div>
+        password : <input type="password" name="password" id="password">
+    </div>
+    <hr>
+    <button id="btnListAddress">주소 목록</button>
+    <table>
+        <thead>
+            <tr><th>zipCode</th><th>addr1</th><th>addr2</th></tr>
+        </thead>
+        <tbody id="addressTbody">
+        </tbody>
+    </table>  
+    <hr>
+    <button id="btnAddAddress">주소 추가</button>
+    <div>
+        zipCode : <input type="text" name="zipCode" id="zipCode">
+    </div>
+    <div>
+        addr1 : <input type="text" name="addr1" id="addr1">
+    </div>
+    <div>
+        addr2 : <input type="text" name="addr2" id="addr2">
+    </div>    
+<script>
+    window.onload = function(){
+        detail();
+        document.querySelector("#btnListAddress").onclick = listAddress;
+        document.querySelector("#btnAddAddress").onclick = addAddress;
+    }
+    
+    async function detail(){
+        
+        // url
+        let url = "/users/detail";
+        let response = await fetch(url);
+        let data = await response.json()
+        
+        if( data.result == "success" ) {
+            // 회원가입 성공일 경우
+            console.log(data.userDto);
+            let { userDto } = data; // destruction (구조분해 할당)
+            document.querySelector("#name").value = userDto.name;
+            document.querySelector("#email").value = userDto.email;
+            document.querySelector("#password").value = userDto.password;
+        }else if( data.result == "fail" ){
+            alert("상세조회 과정에서 오류가 발생했습니다.")
+        }       
+    }
+    
+    async function listAddress(){
+        // url
+        let url = "/users/listUserAddress";
+        let response = await fetch(url);
+        let data = await response.json()
+        
+        if( data.result == "success" ) {
+            // 회원가입 성공일 경우
+            console.log(data.userDto);
+            let { userDto } = data; // destruction (구조분해 할당)
+            
+            let addressHtml = ``;
+            userDto.addresses.forEach( address => {
+                addressHtml += `<tr><td>${address.zipCode}</td><td>${address.addr1}</td><td>${address.addr2}</td></tr>`
+            } );
+            
+            document.querySelector("#addressTbody").innerHTML = addressHtml;
+        }else if( data.result == "fail" ){
+            alert("주소목록 조회 과정에서 오류가 발생했습니다.")
+        }
+    }
+    
+    async function addAddress(){
+        // parameter, value
+        let zipCode = document.querySelector("#zipCode").value;
+        let addr1 = document.querySelector("#addr1").value;
+        let addr2 = document.querySelector("#addr2").value;
+        
+        
+        let urlParams = new URLSearchParams({
+            zipCode, addr1, addr2
+        });
+        
+        // url
+        let url = "/users/addAddress";
+        
+        // post, parameter
+        let fetchOptions = {
+            method: "POST",
+            body:urlParams
+        }
+        
+        let response = await fetch(url, fetchOptions);
+        let data = await response.json()
+        
+        console.log(data);
+        
+        if( data.result == "success" ) {
+            // 성공일 경우
+            // #2 request 2회
+            //listAddress();
+            
+            // #3 request 1회
+            let { userDto } = data; // destruction (구조분해 할당)
+            
+            let addressHtml = ``;
+            userDto.addresses.forEach( address => {
+                addressHtml += `<tr><td>${address.zipCode}</td><td>${address.addr1}</td><td>${address.addr2}</td></tr>`
+            } );
+            
+            document.querySelector("#addressTbody").innerHTML = addressHtml;          
+        }else if( data.result == "fail" ){
+            alert("주소 등록 과정에서 오류가 발생했습니다.")
+        }   
+    }   
+    
+</script> 
+</body>
+</html>

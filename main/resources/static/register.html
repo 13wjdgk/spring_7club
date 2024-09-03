@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="register-container">
+        <h1>회원가입</h1>
+        <hr>
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" name="name" id="name">
+        </div>
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="text" name="email" id="email">
+        </div>
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" name="password" id="password">
+        </div>
+        <div class="form-group">
+            <label for="phone">전화번호</label>
+            <input type="text" name="phone" id="phone">
+        </div>
+        <div class="form-group">
+            <label for="gender">성별</label>
+            <select name="gender" id="gender">
+                <option value="">선택하세요</option>
+                <option value="M">남자</option>
+                <option value="F">여자</option>
+            </select>
+        </div>
+        <button id="btnRegister">회원가입</button>
+    </div>
+    
+<script>
+    window.onload = function(){
+        document.querySelector("#btnRegister").onclick = register;
+    }
+    
+    async function register(){
+        // parameter, value
+        let name = document.querySelector("#name").value.trim();
+        let email = document.querySelector("#email").value.trim();
+        let password = document.querySelector("#password").value.trim();
+        let phone = document.querySelector("#phone").value.trim();
+        let gender = document.querySelector("#gender").value;
+
+        // Simple client-side validation
+        if (!name || !email || !password || !phone || !gender) {
+            alert("모든 필드를 채워주세요.");
+            return;
+        }
+
+        // URL and payload
+        let url = "/api/users/register";
+        
+        let payload = {
+            name: name,
+            email: email,
+            password: password,
+            phone: phone,
+            gender: gender
+        };
+        
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(payload) 
+        };
+        
+        try {
+            let response = await fetch(url, fetchOptions);
+            let data = await response.json();
+            
+            if (data.result === "success") {
+                // 회원가입 성공일 경우
+                console.log(data.userDto);
+                alert("회원가입 되었습니다.");
+                window.location.href = "user_home.html";
+            } else if (data.result === "fail") {
+                alert("회원가입 과정에서 오류가 발생했습니다.");
+            }
+        } catch (error) {
+            console.error('회원가입 요청 중 오류 발생:', error);
+            alert('서버와의 통신 오류가 발생했습니다.');
+        }
+    }
+</script> 
+</body>
+</html>

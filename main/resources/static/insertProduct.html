@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container input, .form-container button {
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .message {
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Insert Product</h2>
+    <div class="form-container">
+        <input type="text" id="insertName" placeholder="Product Name" required>
+        <input type="number" id="insertPrice" placeholder="Price" required>
+        <button onclick="insertProduct()">Complete</button>
+        <button onclick="window.close()">Cancel</button>
+        <p id="insertMessage" class="message"></p>
+    </div>
+
+    <script>
+        // Function to handle inserting a product
+        function insertProduct() {
+            const name = document.getElementById('insertName').value;
+            const price = document.getElementById('insertPrice').value;
+            let content = new URLSearchParams({name,price});
+            console.log(content);
+
+            fetch('/products/insertproduct', {
+                method: 'POST',
+                // headers: { 'Content-Type': 'application/json' },
+                body: content
+            })
+            .then(response => response.json())
+            .then(data => {
+                const message = document.getElementById('insertMessage');
+                if (data.result === 'success') {
+                    message.textContent = 'Product inserted successfully!';
+                    message.className = 'message success';
+                    setTimeout(() => window.close(), 1000); // Close the window after 1 second
+                } else {
+                    message.textContent = 'Failed to insert product.';
+                    message.className = 'message error';
+                }
+            })
+            .catch(error => console.error('Error inserting product:', error));
+        }
+    </script>
+
+</body>
+</html>

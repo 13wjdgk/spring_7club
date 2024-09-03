@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Home</title>
+    <link rel="stylesheet" href="css/styles2.css">
+</head>
+<body>
+   <div class="sidebar">
+        <h2>관리자 페이지</h2>
+        <div id="name"></div> <!-- 사용자 이름이 여기에 표시됩니다 -->
+        <a href="/index.html">홈</a>
+        <hr>
+        <a href="/adminDetail.html">관리자정보 조회</a>
+        <a href="/customerList.html"  class="highlight">회원 목록 조회</a>
+        <a href="/orderlist.html">주문 목록 조회</a>
+        <a href="/admin_productList.html">상품 목록 조회</a>
+        <hr>
+        <button id="btnLogout">로그아웃</button>
+    </div>
+
+    <div class="content">
+      <h1>회원 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>이름</th>
+    <th>이메일</th>
+    <th>전화번호</th>
+    <th>성별</th>
+  </tr>
+  </thead>
+  <tbody id="customer-list">
+  <!-- 회원 목록이 여기에 표시됩니다. -->
+  </tbody>
+</table>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // sessionStorage에서 userDto를 가져와서 userDto 객체로 변환
+            let userDto = JSON.parse(sessionStorage.getItem("userDto"));
+            
+            if (userDto != null) {
+                // 사용자 이름을 가져와서 #name 요소에 설정
+                let userName = userDto.name;
+                document.querySelector("#name").innerHTML = `${userName} 님`;
+            } else {
+                document.querySelector("#name").innerHTML = "사용자 정보를 찾을 수 없습니다.";
+            }
+
+            // 로그아웃 버튼 클릭 시 처리
+            document.querySelector("#btnLogout").onclick = logout;
+        }
+
+        async function logout() {
+            let url = "/users/logout";
+
+            let response = await fetch(url);
+            let data = await response.json();
+            
+            if (data.result === "success") {
+                // 로그아웃 성공일 경우
+                sessionStorage.removeItem("userDto");
+                document.querySelector("#name").innerHTML = "";
+                alert("로그아웃 되었습니다.");
+                window.location.href = "/login.html"; // 로그아웃 후 로그인 페이지로 리디렉션
+            } else if (data.result === "fail") {
+                alert("로그아웃 과정에서 오류가 발생했습니다.");
+            }
+        }
+document.addEventListener("DOMContentLoaded", function() {
+    fetchCustomerList();
+  });
+
+  async function fetchCustomerList() {
+    try {
+      let url = "/users/customerList";
+
+      let response = await fetch(url);
+      let data = await response.json();
+      console.log(data);
+      if (data.result === "success") {
+        populateCustomerList(data.data);
+      } else {
+        alert("회원 목록을 가져오는 데 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("회원 목록 가져오기 오류:", error);
+    }
+  }
+
+  function populateCustomerList(customers) {
+    const customerListElement = document.getElementById("customer-list");
+
+    customers.forEach(customer => {
+      let row = document.createElement("tr");
+
+      let idCell = document.createElement("td");
+      idCell.textContent = customer.id;
+      row.appendChild(idCell);
+
+      let nameCell = document.createElement("td");
+      nameCell.textContent = customer.name;
+      row.appendChild(nameCell);
+
+      let emailCell = document.createElement("td");
+      emailCell.textContent = customer.email;
+      row.appendChild(emailCell);
+
+      let phoneCell = document.createElement("td");
+      phoneCell.textContent = customer.phone;
+      row.appendChild(phoneCell);
+
+      let genderCell = document.createElement("td");
+      genderCell.textContent = customer.gender;
+      row.appendChild(genderCell);
+
+      customerListElement.appendChild(row);
+    });
+  }
+    </script>
+</body>
+</html>

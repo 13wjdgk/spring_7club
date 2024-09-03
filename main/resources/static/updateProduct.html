@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container input, .form-container button {
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .message {
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Update Product</h2>
+    <div class="form-container">
+        <input type="hidden" id="updateId">
+        <input type="text" id="updateName" placeholder="Product Name" required>
+        <input type="number" id="updatePrice" placeholder="Price" required>
+        <button onclick="updateProduct()">Complete</button>
+        <button onclick="window.close()">Cancel</button>
+        <p id="updateMessage" class="message"></p>
+    </div>
+
+    <script>
+        // Load existing product data from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const name = urlParams.get('name');
+        const price = urlParams.get('price');
+
+        document.getElementById('updateId').value = id;
+        document.getElementById('updateName').value = name;
+        document.getElementById('updatePrice').value = price;
+
+        // Function to handle updating a product
+        function updateProduct() {
+
+            const id = document.getElementById('updateId').value;
+            const name = document.getElementById('updateName').value;
+            const price = document.getElementById('updatePrice').value;
+            let content = new URLSearchParams({
+                id,name,price
+            })
+            fetch('/products/updateproduct', {
+                method: 'POST',
+                body: content
+            })
+            .then(response => response.json())
+            .then(data => {
+                const message = document.getElementById('updateMessage');
+                if (data.result === 'success') {
+                    message.textContent = 'Product updated successfully!';
+                    message.className = 'message success';
+                    setTimeout(() => window.close(), 1000); // Close the window after 1 second
+                } else {
+                    message.textContent = 'Failed to update product.';
+                    message.className = 'message error';
+                }
+            })
+            .catch(error => console.error('Error updating product:', error));
+        }
+    </script>
+
+</body>
+</html>

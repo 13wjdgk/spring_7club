@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>another.html</h1>
+	<hr>
+	<h4>NavBar</h4>
+	<div id="name"></div>
+	<button id="btnLogout">Logout</button>
+	<hr>
+	<div id="name"></div>
+
+	
+<script>
+	window.onload = function(){
+		
+		// 저장된 로그인 성공한 사용자의 정보를 얻는 방법
+		
+		// #1 개별 항목을 sessionStorage 관리	
+		/*
+		let name = sessionStorage.getItem("name");
+		console.log(name);
+		if ( name != null ){			
+			document.querySelector("#name").innerHTML = name;
+		}
+		*/
+		
+		// #2 저장된 userDto json 문자열을 userDto 객체로 변환 
+		let userDto = JSON.parse( sessionStorage.getItem("userDto") )
+		console.log(userDto.name);
+		if ( userDto != null ){
+			document.querySelector("#name").innerHTML = userDto.name;
+		}	
+		
+		// 만약 NavBar 가 있다면 NavBar 에 권한에 따라 링크(메뉴) 를 보여주고 안보여주고 처리 필요		
+		
+		document.querySelector("#btnLogout").onclick = logout;
+	}
+	
+	async function logout(){
+
+		let url = "/users/logout";
+
+		let response = await fetch(url);
+		let data = await response.json()
+		
+		if( data.result == "success" ) {
+			// 로그아웃 성공일 경우
+			sessionStorage.removeItem("userDto");
+			document.querySelector("#name").innerHTML = "";
+			alert("로그아웃 되었습니다.");
+		}else if( data.result == "fail" ){
+			alert("로그아웃 과정에서 오류가 발생했습니다.");
+		}
+		
+	}	
+
+</script>	
+</body>
+</html>

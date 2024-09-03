@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 상세 정보</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        h1 { color: #333; }
+        .order-details { max-width: 600px; margin: 0 auto; }
+        .detail-group { margin-bottom: 15px; }
+        .detail-label { font-weight: bold; }
+        .back-link { display: inline-block; margin-top: 20px; color: #4CAF50; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="order-details">
+        <h1>주문 상세 정보</h1>
+        <div id="orderDetails">
+            <!-- 주문 상세 정보가 여기에 삽입됩니다 -->
+        </div>
+        <a href="order-list.html" class="back-link">주문 목록으로 돌아가기</a>
+    </div>
+
+    <script>
+        function getOrderIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        function fetchOrderDetails() {
+            const orderId = getOrderIdFromUrl();
+            if (!orderId) {
+                alert('주문 ID가 제공되지 않았습니다');
+                return;
+            }
+
+            fetch(`/orders/detail/${orderId}`)
+                .then(response => response.json())
+                .then(order => {
+                    const detailsContainer = document.getElementById('orderDetails');
+                    detailsContainer.innerHTML = `
+                        <div class="detail-group">
+                            <p><span class="detail-label">주문 ID:</span> ${order.id}</p>
+                            <p><span class="detail-label">사용자 ID:</span> ${order.userId}</p>
+                            <p><span class="detail-label">사용자 이름:</span> ${order.userName}</p>
+                            <p><span class="detail-label">사용자 이메일:</span> ${order.userEmail}</p>
+                            <p><span class="detail-label">사용자 전화번호:</span> ${order.userPhone}</p>
+                        </div>
+                        <div class="detail-group">
+                            <p><span class="detail-label">상품 ID:</span> ${order.productId}</p>
+                            <p><span class="detail-label">상품명:</span> ${order.productName}</p>
+                            <p><span class="detail-label">상품 가격:</span> ${order.productPrice.toLocaleString()}원</p>
+                        </div>
+                        <div class="detail-group">
+                            <p><span class="detail-label">주문 수량:</span> ${order.orderQuantity}</p>
+                            <p><span class="detail-label">주문 일자:</span> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                            <p><span class="detail-label">총 가격:</span> ${order.totalPrice.toLocaleString()}원</p>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('주문 상세 정보를 가져오는 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                });
+        }
+
+        // 페이지 로드 시 주문 상세 정보를 가져옵니다
+        fetchOrderDetails();
+    </script>
+</body>
+</html>
