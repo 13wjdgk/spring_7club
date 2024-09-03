@@ -2,6 +2,8 @@ package com.mycom.myapp.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,9 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 	private final UserRepository userRepository;
+	   //logger
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    
 
 	@GetMapping("/")
 	public String index(HttpSession session) {
@@ -143,10 +148,15 @@ public class UserController {
 
 	 @PostMapping("/login")
 	    public ResponseEntity<UserResultDto> login(@RequestParam("email") String email, @RequestParam("password") String password, HttpSession session) {
-	        UserResultDto userResultDto = this.userService.login(email, password);
+		 logger.info("login() 시작");
+		 logger.debug("email: {}, password : {}" + email, password);
+	        UserResultDto userResultDto = userService.login(email, password);
 	        if (userResultDto.getResult().equals("success")) {
 	            session.setAttribute("userDto", userResultDto.getUserDto());
+	        }else {
+	        	logger.warn("login 실패!!");
 	        }
+	        logger.info("login() 종료 및 응답");
 	        return ResponseEntity.ok(userResultDto);
 	    }
 

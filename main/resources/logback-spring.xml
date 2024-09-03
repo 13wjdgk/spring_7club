@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+	
+	<appender name="MY_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%clr(%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{20} - %msg%n){blue}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/myapp.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/myapp.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>		
+		<encoder>
+			<pattern>%clr(%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{20} - %msg%n){blue}</pattern>
+		</encoder>
+	</appender>
+		
+	<root level="INFO">
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="ROLLING_FILE"/>
+	</root>
+	     <!-- LoggingAspect에 대한 로거 설정 -->
+    <logger name="com.mycom.myapp.config.LoggingAspect" level="INFO">
+        <appender-ref ref="MY_CONSOLE"/>
+        <appender-ref ref="ROLLING_FILE"/>
+    </logger>
+    
+    <!-- UserController에 대한 로거 설정 -->
+    <logger name="com.mycom.myapp.controller.UserController" level="INFO">
+        <appender-ref ref="MY_CONSOLE"/>
+        <appender-ref ref="ROLLING_FILE"/>
+    </logger>
+</configuration>
