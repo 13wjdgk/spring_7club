@@ -1,0 +1,246 @@
+/* 페이지 전체 레이아웃 */
+body {
+	font-family: Arial, sans-serif;
+	display: flex;
+	height: 100vh;
+	background-color: #f8f9fa;
+	margin: 0;
+}
+
+/* 사이드바 스타일 */
+.sidebar {
+	width: 200px;
+	background-color: #f4f4f4;
+	padding: 20px;
+	box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar a {
+	display: block;
+	padding: 10px;
+	color: #333;
+	text-decoration: none;
+	margin-bottom: 10px;
+	border-radius: 5px;
+	transition: background-color 0.3s;
+}
+
+.sidebar a:hover {
+	background-color: #ddd;
+}
+
+/* 콘텐츠 영역 */
+.content {
+	flex: 1;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/* 중앙에 카드 형식으로 컨텐츠 배치 */
+.container {
+	background-color: #ffffff;
+	padding: 40px; /* 패딩을 조정하여 컨텐츠 공간 확장 */
+	border-radius: 10px;
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	max-width: 800px; /* 최대 너비를 설정하여 크기를 키움 */
+	width: 100%; /* 전체 너비를 차지하도록 설정 */
+}
+
+/* 레지스터 및 로그인 컨테이너에 대한 스타일 */
+.register-container, .login-container {
+	width: 100%; /* 너비를 100%로 설정하여 컨테이너에 맞춤 */
+	max-width: 600px; /* 최대 너비를 설정 */
+	margin: 0 auto; /* 중앙 정렬 */
+}
+
+/* 내용이 많은 경우 텍스트 영역 확장 */
+.container p {
+	margin-bottom: 20px; /* 텍스트와 버튼 사이에 간격 추가 */
+}
+
+/* 헤더 스타일 */
+.container h1 {
+	color: #343a40;
+	font-size: 2rem;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+form {
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+label {
+	display: block;
+	margin-top: 10px;
+}
+
+.container hr {
+	margin-bottom: 20px;
+}
+
+/* 입력 필드 스타일 */
+.form-group {
+	margin-bottom: 15px;
+	text-align: left;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	color: #343a40;
+}
+
+.form-group input[type="text"], .form-group input[type="password"],
+	.form-group select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 1rem;
+}
+
+/* 사용자 이름 표시 영역 */
+#name {
+	font-size: 1rem;
+	margin-bottom: 20px;
+	color: #007bff;
+}
+
+/* 버튼 및 링크 스타일 */
+button, a.button-link {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	cursor: pointer;
+	border-radius: 5px;
+	font-size: 1rem;
+	margin-top: 10px;
+	text-decoration: none;
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	transition: background-color 0.3s ease;
+}
+
+button:hover, a.button-link:hover {
+	background-color: #0056b3;
+}
+
+button {
+	margin-bottom: 10px;
+}
+
+/* 링크를 블록 형태로 배치 */
+.link-container {
+	display: flex;
+	flex-direction: column;
+	margin-top: 20px;
+}
+
+.link-container a {
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+/* 로그인 컨테이너 특화 스타일 */
+.login-container .form-group input[type="text"], .login-container .form-group input[type="password"]
+	{
+	/* Specific styles for login container */
+	border: 1px solid #ccc;
+}
+
+.login-container button {
+	margin-top: 20px; /* Ensures correct spacing for login button */
+}
+
+/* 레지스터 컨테이너 특화 스타일 */
+.register-container .form-group select {
+	/* Specific styles for select fields if needed */
+	
+}
+/* 강조된 링크 스타일 */
+.highlight {
+	background-color: #007bff;
+	color: white;
+	font-weight: bold;
+}
+
+/* 강조된 링크의 호버 효과 */
+.highlight:hover {
+	background-color: #0056b3;
+}
+
+/* 버튼 기본 스타일 */
+.edit-btn {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #ffffff;
+	background-color: #007bff; /* 기본 배경색 */
+	border: 1px solid #007bff; /* 기본 테두리 색상 */
+	border-radius: 5px; /* 둥근 모서리 */
+	font-size: 1rem;
+	text-align: center;
+	text-decoration: none; /* 링크 기본 밑줄 제거 */
+	cursor: pointer;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 호버 상태 */
+.edit-btn:hover {
+	background-color: #0056b3; /* 호버 시 배경색 */
+	border-color: #0056b3; /* 호버 시 테두리 색상 */
+}
+
+/* 포커스 상태 */
+.edit-btn:focus {
+	outline: none; /* 기본 포커스 아웃라인 제거 */
+	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* 포커스 시 강조 효과 */
+}
+
+/* 비활성화 상태 */
+.edit-btn:disabled {
+	background-color: #e0e0e0; /* 비활성화 시 배경색 */
+	color: #b0b0b0; /* 비활성화 시 글자 색상 */
+	border-color: #dcdcdc; /* 비활성화 시 테두리 색상 */
+	cursor: not-allowed; /* 비활성화 시 커서 변경 */
+	pointer-events: none; /* 클릭 불가 */
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+
+th, td {
+	padding: 10px;
+	text-align: left;
+}
+
+th {
+	background-color: #f4f4f4;
+}
+
+.message {
+	margin-top: 10px;
+	font-weight: bold;
+}
+
+.error {
+	color: red;
+}
+
+.success {
+	color: green;
+}

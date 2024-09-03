@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>7조 주문테이블</title>
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+    <div class="login-container">
+        <h1>주문테이블</h1>
+        <hr>
+        <div id="name"></div>
+        
+        <div class="link-container">
+            <a href="/login.html" class="button-link">Login</a>
+            <a href="/register.html" class="button-link">회원가입</a>
+            <a href="/newAdmin.html" class="button-link">관리자회원가입</a>
+        </div>
+    </div>
+
+    <script>
+
+        async function logout(){
+            let url = "/users/logout";
+
+            let response = await fetch(url);
+            let data = await response.json();
+
+            if (data.result == "success") {
+                sessionStorage.removeItem("userDto");
+                document.querySelector("#name").innerHTML = "";
+                alert("로그아웃 되었습니다.");
+            } else if (data.result == "fail") {
+                alert("로그아웃 과정에서 오류가 발생했습니다.");
+            }
+        }  
+    </script>
+</body>
+</html>
