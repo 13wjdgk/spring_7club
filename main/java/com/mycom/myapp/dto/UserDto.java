@@ -27,15 +27,14 @@ public class UserDto {
 	private char gender;
 	private String phone;
 	private Map<Integer,String> roles = new HashMap();
-	//	public UserDto(Long id, String name, String email, String password, char gender, String phone) {
-//		this.id = id;
-//		this.name = name;
-//		this.email = email;
-//		this.password = password;
-//		this.gender = gender;
-//		this.phone = phone;
-//
-//	}
+	public UserDto(Long id, String name, String email, String password, char gender, String phone) {
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.gender = gender;
+		this.phone = phone;
+	}
 
 
 

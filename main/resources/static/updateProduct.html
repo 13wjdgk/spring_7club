@@ -53,20 +53,88 @@
         document.getElementById('updatePrice').value = price;
 
         // Function to handle updating a product
-        function updateProduct() {
-
+        async function updateProduct() {
+        	
             const id = document.getElementById('updateId').value;
             const name = document.getElementById('updateName').value;
             const price = document.getElementById('updatePrice').value;
-            let content = new URLSearchParams({
-                id,name,price
-            })
-            fetch('/products/updateproduct', {
-                method: 'POST',
-                body: content
+        	let url = "/shop/products/" + id;
+        	
+            try {
+                // 서버에 요청 보내기
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, price }) // id는 URL로 전달되므로 본문에서 제거
+                });
+
+                // 응답 상태 처리
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const message = document.getElementById('updateMessage');
+
+                // 성공 여부에 따라 메시지 표시
+                if (data.result === 'success') {
+                    message.textContent = 'Product updated successfully!';
+                    message.className = 'message success';
+                    setTimeout(() => window.close(), 1000); // 1초 후 창 닫기
+                } else {
+                    message.textContent = 'Failed to update product.';
+                    message.className = 'message error';
+                }
+            } catch (error) {
+                console.error('Error updating product:', error);
+                alert('제품 업데이트 과정에서 오류가 발생했습니다.');
+                document.getElementById('updateMessage').textContent = 'An error occurred during the update.';
+                document.getElementById('updateMessage').className = 'message error';
+            }
+
+        	/*
+        	let jsonParams = JSON.stringify( { name, price } );
+        	
+        	let fetchOptions = {
+        		method: "PUT",
+        		headers: {
+        			"Content-Type": "application/json"
+        		},
+        		body: jsonParams
+        	}
+        	
+        	try{
+        		let response = await fetch(url, fetchOptions);
+        		let data = await response.json();
+        		
+        		 const message = document.getElementById('updateMessage');
+                 if (data.result === 'success') {
+                     message.textContent = 'Product updated successfully!';
+                     message.className = 'message success';
+                     setTimeout(() => window.close(), 1000); // Close the window after 1 second
+                 } else {
+                     message.textContent = 'Failed to update product.';
+                     message.className = 'message error';
+                 }
+        	}catch(error){
+           	 	alert("제품 업데이트 과정에서 오류가 발생했습니다.");
+           	 	console.log(error);
+            }
+        	*/
+
+        	/*
+            fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( { name, price } )
             })
             .then(response => response.json())
             .then(data => {
+            	
+            	console.log(data);
+            	
                 const message = document.getElementById('updateMessage');
                 if (data.result === 'success') {
                     message.textContent = 'Product updated successfully!';
@@ -78,6 +146,7 @@
                 }
             })
             .catch(error => console.error('Error updating product:', error));
+			*/
         }
     </script>
 

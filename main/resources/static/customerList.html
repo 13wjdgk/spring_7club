@@ -55,18 +55,18 @@
         }
 
         async function logout() {
-            let url = "/users/logout";
+            let url = "/api/users/logout";
 
             let response = await fetch(url);
             let data = await response.json();
             
-            if (data.result === "success") {
+            if (response.status==200) {
                 // 로그아웃 성공일 경우
                 sessionStorage.removeItem("userDto");
                 document.querySelector("#name").innerHTML = "";
                 alert("로그아웃 되었습니다.");
                 window.location.href = "/login.html"; // 로그아웃 후 로그인 페이지로 리디렉션
-            } else if (data.result === "fail") {
+            } else {
                 alert("로그아웃 과정에서 오류가 발생했습니다.");
             }
         }
@@ -76,13 +76,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
   async function fetchCustomerList() {
     try {
-      let url = "/users/customerList";
+      let url = "/api/users/customerList";
 
       let response = await fetch(url);
-      let data = await response.json();
-      console.log(data);
-      if (data.result === "success") {
-        populateCustomerList(data.data);
+
+      if (response.ok) {
+          let data = await response.json();
+          console.log(data);
+          populateCustomerList(data);
       } else {
         alert("회원 목록을 가져오는 데 실패했습니다.");
       }
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function populateCustomerList(customers) {
+      console.log("cusomers 데이터 : "+customers);
     const customerListElement = document.getElementById("customer-list");
 
     customers.forEach(customer => {

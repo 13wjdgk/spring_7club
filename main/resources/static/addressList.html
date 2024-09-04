@@ -119,22 +119,22 @@
         }
 
         async function logout() {
-            let url = "/users/logout";
+            let url = "/api/users/logout";
 
             let response = await fetch(url);
             let data = await response.json();
             
-            if (data.result === "success") {
+            if (response.status === 200 ) {
                 // 로그아웃 성공일 경우
                 sessionStorage.removeItem("userDto");
                 document.querySelector("#name").innerHTML = "";
                 alert("로그아웃 되었습니다.");
                 window.location.href = "/login.html"; // 로그아웃 후 로그인 페이지로 리디렉션
-            } else if (data.result === "fail") {
+            } else  {
                 alert("로그아웃 과정에서 오류가 발생했습니다.");
             }
         }
-document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
         fetchAddressList();
         // 모달 제어
         // var modal = document.getElementById("addAddressModal");
@@ -162,21 +162,24 @@ document.addEventListener("DOMContentLoaded", function() {
             let zipCode = document.getElementById("zipCode").value;
             let streetName = document.getElementById("streetName").value;
 
-            let urlParams = new URLSearchParams({
+            let urlParams = JSON.stringify({
                 zipCode: zipCode,
                 streetName: streetName
             });
 
-            let url = "/users/address";
+            let url = "/api/users/address";
             let fetchOptions = {
                 method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: urlParams
             }
 
             let response = await fetch(url, fetchOptions);
             let data = await response.json();
 
-            if (data.result === "success") {
+            if (response.ok) {
                 alert("주소가 성공적으로 추가되었습니다.");
                 window.location.reload(); // 페이지 새로고침
             } else {
@@ -187,13 +190,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function fetchAddressList() {
         try {
-            let response = await fetch('/users/addressList');
-            let data = await response.json();
-
-            if (data.result === "success") {
-                populateAddressList(data.data);
-            } else {
-                alert("회원 주소 목록을 가져오는 데 실패했습니다.");
+            let url = '/api/users/addressList';
+            let response = await fetch(url)
+            if( response.ok ) {
+                let data = await response.json();
+                populateAddressList(data);
+            }else {
+                alert("Failed to retrieve user details.");
             }
         } catch (error) {
             console.error("회원 주소 목록 가져오기 오류:", error);

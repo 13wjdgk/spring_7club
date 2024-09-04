@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService{
 			userDto.setGender(user.getGender());
 			userDto.setPhone(user.getPhone());
 		});
+		System.out.println("userDto - detailUser : " + userDto);
 		return userDto;
 	}
 
@@ -69,10 +70,10 @@ public class UserServiceImpl implements UserService{
 	public List<UserDto> listUser(long id) {
 		System.out.println("id : " + id);
 		System.out.println("userRepository.findById(id) : " + userRepository.findById(id));
-		//User user = userRepository.findById(id).orElseThrow(() -> {new IllegalArgumentException("해당 사용자가 없습니다.")});
-		// if(user.getRoles().stream().anyMatch(role -> role.getRoleName().equals("Manager"))) {
-		// 	return userRepository.findCustomerUser();
-		// }
+		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+		if(user.getRoles().stream().anyMatch(role -> role.getRoleName().equals("Manager"))) {
+			return userRepository.findCustomerUser();
+		}
 		throw new IllegalArgumentException("관리자만 접근 가능합니다.");
 	}
 

@@ -2,12 +2,17 @@ package com.mycom.myapp.controller;
 
 import java.util.List;
 
+import javax.swing.text.html.parser.Entity;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mycom.myapp.dto.AddressDto;
 import com.mycom.myapp.dto.ResultDto;
@@ -20,9 +25,8 @@ import com.mycom.myapp.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
-@Controller
-@ResponseBody
-@RequestMapping("/users")
+@RestController
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
@@ -30,12 +34,6 @@ public class UserController {
 
 	@GetMapping("/")
 	public String index(HttpSession session) {
-//		List<UserDto> users = userRepository.findCustomerUser();
-//
-//		System.out.println(userRepository.findCustomerUser());
-
-		// session.setAttribute("id", 3L);
-		// System.out.println("index" + session.getAttribute("id"));
 		return "index_가.html";
 	}
 
@@ -49,14 +47,15 @@ public class UserController {
 	// 	return userService.detailUser((long)session.getAttribute("id"));
 	// }
 	@GetMapping("/detail")
-	public ResultDto<UserDto> detail(HttpSession session) {
+	public ResponseEntity<UserDto> detail(HttpSession session) {
 		UserDto sessionValue = (UserDto) session.getAttribute("userDto");
+		System.out.println("sessionValue : " + session.getAttribute("userDto"));
 		UserDto result = userService.detailUser(sessionValue.getId());
 
-		if(result==null) {
-			return new ResultDto<UserDto>("fail", result);
+		if(result.getName()==null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResultDto<UserDto>("success", result);
+		return ResponseEntity.ok(result);
 	}
 
 	/**
@@ -65,18 +64,17 @@ public class UserController {
 	 * @return UserDto
 	 */
 	@PostMapping("/update")
-	public ResultDto<UserDto> update(HttpSession session,  UserDto userDto) {
+	public ResponseEntity<UserDto> update(HttpSession session,  UserDto userDto) {
 		UserDto sessionValue = (UserDto) session.getAttribute("userDto");
 		Long id = sessionValue.getId();
-		System.out.println("id : " + id);
 		if(id==null) {
-			return  new ResultDto<UserDto>("fail", null);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		UserDto result = userService.updateUser(id,userDto);
 		if(result==null) {
-			return new ResultDto<UserDto>("fail", result);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResultDto<UserDto>("success", result);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 
@@ -86,18 +84,18 @@ public class UserController {
 	 * @return List<AddressDto>
 	 */
 	@GetMapping("/addressList")
-	public ResultDto<List<AddressDto>> addressList(HttpSession session) {
+	public ResponseEntity<List<AddressDto>> addressList(HttpSession session) {
 		UserDto sessionValue = (UserDto) session.getAttribute("userDto");
 		System.out.println("sessionValue : " + sessionValue);
 		Long id = sessionValue.getId();
 		if(id==null) {
-			return  new ResultDto<List<AddressDto>>("fail", null);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		List<AddressDto> result = userService.listUserAddress(id);
 		if(result==null) {
-			return new ResultDto<List<AddressDto>>("fail", result);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResultDto<List<AddressDto>>("success", result);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	/**
 	 * 회원 주소 등록
@@ -106,18 +104,18 @@ public class UserController {
 	 * @return AddressDto
 	 */
 	@PostMapping("/address")
-	public ResultDto<AddressDto> addAddress(HttpSession session,AddressDto addressDto) {
+	public ResponseEntity<AddressDto> addAddress(HttpSession session,AddressDto addressDto) {
 		UserDto sessionValue = (UserDto) session.getAttribute("userDto");
 		System.out.println("sessionValue : " + sessionValue);
 		Long id = sessionValue.getId();
 		if(id==null) {
-			return  new ResultDto<AddressDto>("fail", null);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		AddressDto result = userService.saveUserAddress(addressDto,id);
 		if(result==null) {
-			return new ResultDto<AddressDto>("fail", result);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResultDto<AddressDto>("success", result);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	/**
@@ -126,14 +124,14 @@ public class UserController {
 	 * @return AddressDto
 	 */
 	@GetMapping("/customerList")
-	public ResultDto<List<UserDto>> customerList(HttpSession session) {
+	public ResponseEntity<List<UserDto>> customerList(HttpSession session) {
 		UserDto sessionValue = (UserDto) session.getAttribute("userDto");
 		Long id = sessionValue.getId();
 		try{
 			List<UserDto> result = userService.listUser(id);
-			return new ResultDto<List<UserDto>>("success", result);
+			return new ResponseEntity<>(result, HttpStatus.OK);
 		}catch (Exception e){
-			return new ResultDto<List<UserDto>>("fail", null);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -142,9 +140,7 @@ public class UserController {
 	@PostMapping({"/login"})
 	public UserResultDto login(@RequestParam("email") String email, @RequestParam("password") String password, HttpSession session) {
 		UserResultDto userResultDto = this.userService.login(email, password);
-		if (userResultDto.getResult().equals("success")) {
-			session.setAttribute("userDto", userResultDto.getUserDto());
-		}
+		session.setAttribute("userDto", userResultDto.getUserDto());
 
 		return userResultDto;
 	}
