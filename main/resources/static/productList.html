@@ -70,7 +70,31 @@
             }
         }
      // Function to fetch and display the product list
-        function listProducts() {
+        async function listProducts() {
+    	 
+        	let url = "/shop/products";
+
+            // 비관적 대응
+            // back-end 가 비정상적인 응답에 대해서 body 처리를 잘 안할 수도 있다.
+            try{
+                let response = await fetch(url);
+                
+                if( response.ok ){
+                    let {productList} = await response.json();
+                    makeListHtml(productList);
+                }else{
+                    // 세분화
+                    switch(response.status){
+                        case 404: alert("제품 데이터를 찾알 수 없습니다."); break;
+                        case 500: alert("제품 조회 과정 중 서버 오류가 발생했습니다."); break;
+                    }
+                }
+            }catch(error){
+                alert("제품 조회 과정 중 오류가 발생했습니다.");
+                console.log(error);
+            }
+    	 
+    	 /*
             fetch('/products/listproduct')
                 .then(response => response.json())
                 .then(data => {
@@ -93,11 +117,73 @@
                     }
                 })
                 .catch(error => console.error('Error fetching products:', error));
+    	 */
+        }
+     
+        function makeListHtml(data){ // 구 list
+        	
+            const tbody = document.querySelector('#productTable tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+            
+                data.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>${product.price}</td>
+                    `;
+                    // Add event listener to each row to open update form on click
+                    row.addEventListener('click', () => openUpdateProductForm(product.id, product.name, product.price));
+                    tbody.appendChild(row);
+                });
+
+        	/*
+            let listHtml = ``;
+            list.forEach( el => {
+                let name = el.name;
+                let price = el.price;
+
+                
+                listHtml += `<tr style="cursor: pointer;"><td>${name}</td><td>${price}</td></tr>`;
+            });
+            
+            document.querySelector("#productTable tbody").innerHTML = listHtml;
+            
+            document.querySelectorAll("#productTable tbody tr").forEach( el => {
+                el.onclick = function(){
+                    let id = this.getAttribute("data-id");
+                    detailStudent(id);
+                }
+            });
+            */
+        }
+        
+        async function detailStudent(id){
+            let url = "/shop/products/" + id;
+//          let url = `/api/json/re/students/${id}`;
+            
+            try{
+                let response = await fetch(url);
+                let {productDto} = await response.json();
+                console.log(productDto);
+                makeDetailHtml(productDto);
+            }catch(error){
+                alert("제품 상세 조회 과정 중 오류가 발생했습니다.");
+                console.log(error)
+            }
         }
 
         // Function to open the insert product form in a new window
         function openInsertProductForm() {
             window.open('insertProduct.html', 'Insert Product', 'width=400,height=300');
+        }
+        
+     // 제품 업데이트 폼을 새 창으로 여는 함수
+        function openUpdateProductForm(productId, productName, productPrice) {
+            // 새 창을 열거나 모달을 생성하여 제품 정보를 업데이트할 수 있도록 합니다.
+            // 예: 'updateProduct.html' 페이지를 열고 URL 쿼리 파라미터로 제품 정보를 전달합니다.
+            const updateUrl = `updateProduct.html?id=${productId}&name=${encodeURIComponent(productName)}&price=${productPrice}`;
+            window.open(updateUrl, 'Update Product', 'width=400,height=300');
         }
 
 

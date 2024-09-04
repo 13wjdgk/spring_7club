@@ -1,14 +1,16 @@
 package com.mycom.myapp.controller;
 
-import com.mycom.myapp.dto.UserDto;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.mycom.myapp.dto.ProductDto;
 import com.mycom.myapp.dto.ProductResultDto;
+import com.mycom.myapp.dto.UserDto;
 import com.mycom.myapp.entity.Product;
 import com.mycom.myapp.entity.User;
 import com.mycom.myapp.service.ProductService;
@@ -16,16 +18,15 @@ import com.mycom.myapp.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
-@Controller
-@ResponseBody
-@RequestMapping("/products")
+@RestController
+@RequestMapping("/shop")
 @RequiredArgsConstructor
 public class ProductController {
 
 	private final ProductService productService;
 
-	@GetMapping("/listproduct")
-	public ProductResultDto listProduct() {
+	@GetMapping("/products")
+	public ResponseEntity<ProductResultDto> listProduct() {
 
 		ProductResultDto productResultDto = new ProductResultDto();
 
@@ -38,18 +39,24 @@ public class ProductController {
 			productResultDto.setResult("fail");
 		}
 
-		return productResultDto;
+		if ("success".equals(productResultDto.getResult())) {
+			return ResponseEntity.ok().body(productResultDto);
+		} else if ("fail".equals(productResultDto.getResult())) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
-	@PostMapping("/insertproduct")
-	public ProductResultDto insertProduct(HttpSession session, Product product) {
+	@PostMapping("/products")
+	public ResponseEntity<ProductResultDto> insertProduct(HttpSession session, @RequestBody Product product) {
 
 		ProductResultDto productResultDto = new ProductResultDto();
 
-		UserDto user = (UserDto) session.getAttribute("userDto");
+		UserDto userDto = (UserDto) session.getAttribute("userDto");
 
 		// 현재 session 유저의 role이 관리자(2:Manager)인 경우에만 insert 수행
-		if (user != null && user.getRoles().get(2).equals("Manager")) {
+		if (userDto != null && userDto.getRoles().get(2).equals("Manager")) {
 			try {
 				// 관리자인 경우 insert 수행
 				productResultDto.setProductDto(productService.insertProduct(product));
@@ -63,20 +70,27 @@ public class ProductController {
 			productResultDto.setResult("unauthorized");
 		}
 
-		return productResultDto;
+		if ("success".equals(productResultDto.getResult())) {
+			return ResponseEntity.ok().body(productResultDto);
+		} else if ("fail".equals(productResultDto.getResult())) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
-	@PostMapping("/updateproduct")
-	public ProductResultDto updateProduct(HttpSession session, Product product) {
+	@PutMapping("/products/{id}")
+	public ResponseEntity<ProductResultDto> updateProduct(HttpSession session, @PathVariable("id") int id, @RequestBody Product product) {
 
 		ProductResultDto productResultDto = new ProductResultDto();
 		
-		UserDto user = (UserDto) session.getAttribute("userDto");
-
+		UserDto userDto = (UserDto) session.getAttribute("userDto");
+		
 		// 현재 session 유저의 role이 관리자(2:Manager)인 경우에만 update 수행
-		if (user != null && user.getRoles().get(2).equals("Manager")) {
+		if (userDto != null && userDto.getRoles().get(2).equals("Manager") ) {
 			try {
 				// 관리자인 경우 update 수행
+				product.setId(id);
 				productResultDto.setProductDto(productService.updateProduct(product));
 				productResultDto.setResult("success");
 
@@ -88,8 +102,14 @@ public class ProductController {
 			productResultDto.setResult("unauthorized");
 		}
 
-
-		return productResultDto;
+		// ResultStudentDto 의 result 에 대응
+		if ("success".equals(productResultDto.getResult())) {
+			return ResponseEntity.ok().body(productResultDto);
+		} else if ("fail".equals(productResultDto.getResult())) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
 }

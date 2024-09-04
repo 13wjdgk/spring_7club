@@ -42,30 +42,44 @@
 
     <script>
         // Function to handle inserting a product
-        function insertProduct() {
-            const name = document.getElementById('insertName').value;
-            const price = document.getElementById('insertPrice').value;
-            let content = new URLSearchParams({name,price});
-            console.log(content);
+        async function insertProduct() {
+            const name = document.getElementById("insertName").value;
+            const price = document.getElementById("insertPrice").value;
+            let url = "/shop/products";
+            
+            try {
+            	 // 서버에 요청 보내기
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, price }) // id는 URL로 전달되므로 본문에서 제거
+                });
 
-            fetch('/products/insertproduct', {
-                method: 'POST',
-                // headers: { 'Content-Type': 'application/json' },
-                body: content
-            })
-            .then(response => response.json())
-            .then(data => {
+                // 응답 상태 처리
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
                 const message = document.getElementById('insertMessage');
+
+                // 성공 여부에 따라 메시지 표시
                 if (data.result === 'success') {
                     message.textContent = 'Product inserted successfully!';
                     message.className = 'message success';
-                    setTimeout(() => window.close(), 1000); // Close the window after 1 second
+                    setTimeout(() => window.close(), 1000); // 1초 후 창 닫기
                 } else {
                     message.textContent = 'Failed to insert product.';
                     message.className = 'message error';
                 }
-            })
-            .catch(error => console.error('Error inserting product:', error));
+            }catch(error){
+            	 console.error('Error inserting product:', error);
+                 alert('제품 등록 과정에서 오류가 발생했습니다.');
+                 document.getElementById('insertMessage').textContent = 'An error occurred during the insert.';
+                 document.getElementById('insertMessage').className = 'message error';
+            }
         }
     </script>
 
